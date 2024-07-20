@@ -4,28 +4,28 @@
 
 using namespace std;
 
+#include "player1.h"
 
 int main()
 {
- 
+    
+    
+
     sf::Texture ballT;
     sf::Texture player1T;
     sf::Texture player2T;
     sf::Texture backgroundT;
 
      
-    sf::Sprite ballS;
-    sf::Sprite player1S;
+    sf::Sprite ballS;    
     sf::Sprite player2S;
     sf::Sprite backgroundS;
-    
-
-    sf::SoundBuffer dibuSoundB;
-    sf::Sound dibuSound;
-
-    bool flag = false;
-    float velX = 5;
+   
+    bool pressed = false;
+    float velX = 5 ;
     float velY = 5;
+    float velP1X = 0;
+    float velP1Y = 10;
 
 
     if (!backgroundT.loadFromFile("campo.png")) {
@@ -34,15 +34,8 @@ int main()
     if (!ballT.loadFromFile("ball.png")) {
         cout << "Error al cargar textura ball" << endl;
     }
-
-    if (!player1T.loadFromFile("dibu.png")) {
-        cout << "Error al cargar textura Dibu" << endl;
-    }
     if (!player2T.loadFromFile("kolo.png")) {
         cout << "Error al cargar textura Kolo" << endl;
-    }
-    if (!dibuSoundB.loadFromFile("tecomo.ogg")) {
-        cout << "Error al cargar el sonido tecomo.ogg" <<endl;
     }
 
     //background texture
@@ -58,13 +51,6 @@ int main()
     ballS.setPosition(425, 250);
     ballS.setScale(0.02, 0.02);
 
-    //dibu texture & sound
-    player1S.setTexture(player1T);
-    player1S.setOrigin(player1T.getSize().x / 2, player1T.getSize().y / 2);
-    player1S.setPosition(805, 250);
-    player1S.setScale(0.2, 0.2);
-    dibuSound.setBuffer(dibuSoundB);
-
     //kolo texture
     player2S.setTexture(player2T);
     player2S.setOrigin(player2T.getSize().x / 2, player2T.getSize().y / 2);
@@ -77,9 +63,10 @@ int main()
     window.setFramerateLimit(60);
     
     
- 
+    
     while (window.isOpen())
     {
+        Player1* dibu = new Player1(player1T);
         sf::Event event;
         while (window.pollEvent(event))
         {
@@ -96,17 +83,27 @@ int main()
         if (ballS.getPosition().y > 500 || ballS.getPosition().y < 0) {
             velY *= -1;
         }
-
         //player1 movement
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-        {
-            player1S.move(0, -10);
-            
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up)&& !pressed)
+        {  
+            pressed = true;
+            dibu->movement(0, -10);
+
         }
-        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && !pressed)
         {
-            player1S.move(0, 10);
+            pressed = true;
+            dibu->movement(0, 10);
         }
+        if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
+        {
+            pressed = false;
+        }
+        else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
+        {
+            pressed = false;
+        }
+
         //player2 movement
         if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
         {
@@ -117,22 +114,16 @@ int main()
             player2S.move(0, 10);
         }
 
-        //sound player1
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::K)&& !flag) {
-            flag = true;
-            dibuSound.play();
-            
-        }
-        else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
-            flag = false;
-        }
        
         window.clear();
         window.draw(backgroundS);
         window.draw(ballS);
-        window.draw(player1S);
+        window.draw(*dibu);
         window.draw(player2S);
         window.display();
+
+
+        delete dibu;
     }
 
     return 0;
