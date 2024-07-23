@@ -1,5 +1,7 @@
 #include "player1.h"
 
+
+
 Player1::Player1(sf::Texture& texture) {
 
 	if (!player1T.loadFromFile("dibu.png")) {
@@ -14,14 +16,22 @@ Player1::Player1(sf::Texture& texture) {
 	player1S.setPosition(805, 250);
 	player1S.setScale(0.2, 0.2);
 	dibuSound.setBuffer(dibuSoundB);
-
-
 }
 
-void Player1::movement(int x, int y)
+void Player1::movement()
 {
-		player1S.move(x,y);
-}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Up) && player1S.getPosition().y > 0)
+	{
+		//pressed = true;
+		player1S.move(0, -10);
+	}
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Down) && player1S.getPosition().y < 500)
+	{
+		//pressed = true;
+		player1S.move(0, 10);
+	}
+	
+	}
 
 void Player1::play()
 {	
@@ -32,6 +42,18 @@ void Player1::play()
 	else if (!sf::Keyboard::isKeyPressed(sf::Keyboard::K)) {
 		flag = false;
 	}
+}
+
+sf::FloatRect Player1::getGlobalBounds() const {
+	return player1S.getGlobalBounds();
+}
+bool Player1::contains(float x, float y) const {
+	return player1S.getGlobalBounds().contains(x, y);
+}
+
+sf::Vector2f Player1::getPosition()
+{
+	return player1S.getPosition();
 }
 
 void Player1::draw(sf::RenderTarget &rt, sf::RenderStates rs) const
